@@ -19,7 +19,6 @@ const Container = styled.div`
 
 const Label = styled.label`
     font-size: 1rem;
-    font-weight: bold;
     color: #FFF;
 `;
 
@@ -31,10 +30,8 @@ const Input = styled.input`
     border-radius: 4px;
     outline: none;
     transition: border-color 0.3s;
-
-    &:focus {
-        border-color: #007BFF;
-    }
+    background-color: transparent;
+    color: var(--selected);
 `;
 
 function NumberSelector(props: NumberSelectorProps) {

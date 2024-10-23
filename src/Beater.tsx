@@ -45,7 +45,7 @@ function Beater() {
         <Application>
             <Title>BEAT ME</Title>
             <Container>
-                <NumberSelector label="BPM: " value={bpm} setValue={setBPM} min={0} max={300} />
+                <NumberSelector label="BPM" value={bpm} setValue={setBPM} min={0} max={300} />
                 <Container>
                     {Array.from({ length: TOTAL_ROWS }).map((_, rowIndex) => (<Row key={"row" + rowIndex}>
                         <InstrumentTitle key={rowIndex + "a"}>
