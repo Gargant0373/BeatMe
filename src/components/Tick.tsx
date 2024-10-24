@@ -14,7 +14,7 @@ const Tick = styled.a<TickProps>`
     transition: background-color 0.3s;
     cursor: pointer;
     &:hover {
-        background-color: 'var(--hover)';
+        background-color: #FFF;
     }
 `;
 

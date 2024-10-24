@@ -9,6 +9,7 @@ import TickWrapper from "./components/TickWrapper";
 import Title from "./components/Title";
 import { useBeat } from "./hooks/useBeat";
 import { useSound } from "./hooks/useSound";
+import Subtitle from "./components/Subtitle";
 
 const TOTAL_ROWS = 4;
 const TOTAL_STEPS = 16;
@@ -44,6 +45,7 @@ function Beater() {
     return (
         <Application>
             <Title>BEAT ME</Title>
+            <Subtitle>Click the Ticks to generate beats!</Subtitle>
             <Container>
                 <NumberSelector label="BPM" value={bpm} setValue={setBPM} min={0} max={300} />
                 <Container>
