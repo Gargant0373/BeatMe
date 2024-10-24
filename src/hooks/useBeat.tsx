@@ -1,15 +1,20 @@
 import { useState, useEffect } from "react";
 
-export const useBeat = (totalSteps: number, beatInterval: number) => {
+export const useBeat = (playing: boolean, totalSteps: number, beatInterval: number) => {
     const [currentStep, setCurrentStep] = useState(0);
 
     useEffect(() => {
+        if (!playing) return;
+
         const interval = setInterval(() => {
             setCurrentStep(prevStep => (prevStep + 1) % totalSteps);
         }, beatInterval);
 
-        return () => clearInterval(interval);
-    }, [totalSteps, beatInterval]);
+        return () => {
+            setCurrentStep(-1);
+            clearInterval(interval);
+        };
+    }, [playing, totalSteps, beatInterval]);
 
     return { currentStep };
 };

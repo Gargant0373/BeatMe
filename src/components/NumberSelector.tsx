@@ -23,7 +23,7 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-    width: 70px;
+    width: min-content;
     padding: 5px;
     font-size: 1rem;
     border: 1px solid #ccc;
@@ -31,7 +31,23 @@ const Input = styled.input`
     outline: none;
     transition: border-color 0.3s;
     background-color: transparent;
-    color: var(--selected);
+    color: #FFF;
+
+    &:focus {
+        border-color: var(--selected);
+    }
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    &::-moz-inner-spin-button,
+    &::-moz-outer-spin-button {
+        -moz-appearance: none;
+        margin: 0;
+    }
 `;
 
 function NumberSelector(props: NumberSelectorProps) {

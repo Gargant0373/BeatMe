@@ -7,8 +7,9 @@ html, body {
 }
 
 :root {
-    --selected: #F0A202;
-    --active: #F18805;
     --selected-active: #D95D39;
-    --hover: #D95D39;
+    --selected: #F18805;
+    --active: #ffc043;
+    --hover: #7d99ff;
+    --default: #f5b466;
 }
