@@ -104,6 +104,10 @@ function Beater() {
                 ))}
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                     <Button onClick={togglePlay}>{playing ? "STOP" : "START"}</Button>
+                    <Button onClick={() => {
+                        setSelected(Array(TOTAL_STEPS).fill(Array(TOTAL_STEPS).fill(false)));
+                        setPlaying(false);
+                    }}>CLEAR</Button>
                     <Button onClick={toggleRecord}>{isRecording ? "RECORDING..." : "RECORD"}</Button>
                 </div>
                 {audioURL && (
