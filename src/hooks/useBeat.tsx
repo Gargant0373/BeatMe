@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export const useBeat = (playing: boolean, totalSteps: number, beatInterval: number) => {
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(-1);
 
     useEffect(() => {
         if (!playing) return;
