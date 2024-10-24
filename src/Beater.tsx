@@ -10,16 +10,25 @@ import Tick from "./components/Tick";
 import TickWrapper from "./components/TickWrapper";
 import Title from "./components/Title";
 import { useBeat } from "./hooks/useBeat";
-import { useSound } from "./hooks/useSound";
+import { useSound, MusicalNote } from "./hooks/useSound";
 import { useAudioRecorder } from "./hooks/useAudioRecorder";
 import DownloadContainer from "./components/DownloadContainer";
 
-const TOTAL_ROWS = 4;
+const TOTAL_ROWS = 5;
 const TOTAL_STEPS = 16;
 
+const getNextPitch = (currentPitch: MusicalNote): MusicalNote => {
+    const notes = Object.values(MusicalNote);
+    const currentIndex = notes.indexOf(currentPitch);
+    return notes[(currentIndex + 1) % notes.length];
+};
+
 function Beater() {
-    const [selected, setSelected] = useState<boolean[][]>(Array(TOTAL_STEPS).fill(Array(TOTAL_STEPS).fill(false)));
-    const instruments = ['kick', 'snare', 'hi-hat', 'clap'];
+    const [selected, setSelected] = useState<boolean[][]>(Array(TOTAL_ROWS).fill(Array(TOTAL_STEPS).fill(false)));
+    const [tickPitches, setTickPitches] = useState<MusicalNote[][]>(
+        Array(TOTAL_ROWS).fill(Array(TOTAL_STEPS).fill(MusicalNote.A4))
+    );
+    const instruments = ['piano', 'kick', 'snare', 'hi-hat', 'clap'];
     const [bpm, setBPM] = useState<number>(120);
     const [playing, setPlaying] = useState<boolean>(false);
     const { currentStep } = useBeat(playing, TOTAL_STEPS, 60000 / bpm);
@@ -32,7 +41,8 @@ function Beater() {
     useEffect(() => {
         instruments.forEach((inst, rowIndex) => {
             if (selected[rowIndex][currentStep]) {
-                const source = playSound(inst);
+                const pitch = tickPitches[rowIndex][currentStep];
+                const source = playSound(inst, pitch);
                 if (source) {
                     connectToRecorder(source);
                 }
@@ -53,11 +63,26 @@ function Beater() {
         }
     }, [cycleCount, recordingStarted]);
 
-    const handleTickClick = (columnIndex: number, stepIndex: number) => {
+    const handleTickClick = (rowIndex: number, stepIndex: number) => {
         setSelected(prevSelected => {
             const newSelected = prevSelected.map(row => [...row]);
-            newSelected[columnIndex][stepIndex] = !newSelected[columnIndex][stepIndex];
+            newSelected[rowIndex][stepIndex] = !newSelected[rowIndex][stepIndex];
             return newSelected;
+        });
+    };
+
+    const handleRightClickTick = (ev: React.MouseEvent, rowIndex: number, stepIndex: number) => {
+        ev.preventDefault();
+
+        setTickPitches(prevPitches => {
+            const newPitches = prevPitches.map(row => [...row]);
+            const currentPitch = newPitches[rowIndex][stepIndex];
+            const newPitch = getNextPitch(currentPitch);
+            newPitches[rowIndex][stepIndex] = newPitch;
+
+            playSound(instruments[rowIndex], newPitch);
+
+            return newPitches;
         });
     };
 
@@ -78,26 +103,29 @@ function Beater() {
         <Application>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", width: "100%" }}>
                 <Title>BEAT ME</Title>
-                <Subtitle>Click the Ticks to generate beats!</Subtitle>
+                <Subtitle>LEFT CLICK - SELECT | RIGHT CLICK - PITCH</Subtitle>
             </div>
             <Container>
                 <NumberSelector label="BPM" value={bpm} setValue={setBPM} min={0} max={300} />
                 {Array.from({ length: TOTAL_ROWS }).map((_, rowIndex) => (
                     <Row key={"row" + rowIndex}>
-                        <InstrumentTitle key={rowIndex + "a"} onClick={() => playSound(instruments[rowIndex])}>
+                        <InstrumentTitle key={rowIndex + "a"} onClick={() => playSound(instruments[rowIndex], tickPitches[rowIndex][currentStep])}>
                             {instruments[rowIndex]}
                         </InstrumentTitle>
                         <TickWrapper key={rowIndex}>
                             {Array.from({ length: TOTAL_STEPS }).map((_, stepIndex) => (
                                 <Tick
-                                    key={stepIndex}
                                     active={currentStep === stepIndex ? 1 : 0}
                                     selected={selected[rowIndex][stepIndex] ? 1 : 0}
+                                    pitch={tickPitches[rowIndex][stepIndex]}
                                     onClick={(ev) => {
                                         ev.preventDefault();
                                         handleTickClick(rowIndex, stepIndex);
                                     }}
-                                />
+                                    onContextMenu={(ev) => handleRightClickTick(ev, rowIndex, stepIndex)}
+                                >
+                                    <span>{tickPitches[rowIndex][stepIndex]}</span>
+                                </Tick>
                             ))}
                         </TickWrapper>
                     </Row>
@@ -105,7 +133,7 @@ function Beater() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                     <Button onClick={togglePlay}>{playing ? "STOP" : "START"}</Button>
                     <Button onClick={() => {
-                        setSelected(Array(TOTAL_STEPS).fill(Array(TOTAL_STEPS).fill(false)));
+                        setSelected(Array(TOTAL_ROWS).fill(Array(TOTAL_STEPS).fill(false)));
                         setPlaying(false);
                     }}>CLEAR</Button>
                     <Button onClick={toggleRecord}>{isRecording ? "RECORDING..." : "RECORD"}</Button>
